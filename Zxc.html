@@ -1,0 +1,1655 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>ZXCSTORE - Калькулятор цен</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg-gradient-start: #667eea;
+            --bg-gradient-end: #764ba2;
+            --card-bg: #ffffff;
+            --text-primary: #333333;
+            --text-secondary: #666666;
+            --text-light: #999999;
+            --input-bg: #f8f9fa;
+            --input-border: #e0e0e0;
+            --input-focus: #667eea;
+            --result-bg: #f8f9fa;
+            --result-border: #e8e8e8;
+            --highlight-bg: #f0f4ff;
+            --highlight-border: #d6e0ff;
+            --formula-bg: #f0f4ff;
+            --shadow: rgba(0, 0, 0, 0.3);
+            --btn-reset-bg: #f0f0f0;
+            --btn-reset-hover: #e0e0e0;
+            --badge-bg: #764ba2;
+            --badge-text: #ffffff;
+            --diff-color: #ea4335;
+            --card-color: #667eea;
+            --cash-color: #34a853;
+            --final-color: #764ba2;
+            --toast-bg: #333333;
+            --toast-text: #ffffff;
+            --transition: all 0.3s ease;
+            --dropdown-bg: #ffffff;
+            --dropdown-hover: #f0f4ff;
+            --dropdown-border: #e0e0e0;
+            --dropdown-text: #333333;
+            --scrollbar-track: #f0f0f0;
+            --scrollbar-thumb: #667eea;
+            --store-color: #ffffff;
+            --tab-bg: #f0f0f0;
+            --tab-active: #667eea;
+            --tab-text: #666;
+            --tab-active-text: #fff;
+            --remove-btn: #ea4335;
+            --remove-btn-hover: #c62828;
+            --add-btn: #34a853;
+            --add-btn-hover: #2d8f47;
+        }
+
+        [data-theme="dark"] {
+            --bg-gradient-start: #1a1a2e;
+            --bg-gradient-end: #16213e;
+            --card-bg: #1e1e2e;
+            --text-primary: #e8e8e8;
+            --text-secondary: #aaaaaa;
+            --text-light: #888888;
+            --input-bg: #2a2a3e;
+            --input-border: #3a3a4e;
+            --input-focus: #667eea;
+            --result-bg: #2a2a3e;
+            --result-border: #3a3a4e;
+            --highlight-bg: #2a2a4e;
+            --highlight-border: #3a3a6e;
+            --formula-bg: #2a2a4e;
+            --shadow: rgba(0, 0, 0, 0.6);
+            --btn-reset-bg: #3a3a4e;
+            --btn-reset-hover: #4a4a5e;
+            --badge-bg: #667eea;
+            --badge-text: #ffffff;
+            --diff-color: #ff6b6b;
+            --card-color: #7c9bff;
+            --cash-color: #51cf66;
+            --final-color: #a78bfa;
+            --toast-bg: #2a2a3e;
+            --toast-text: #e8e8e8;
+            --dropdown-bg: #2a2a3e;
+            --dropdown-hover: #3a3a4e;
+            --dropdown-border: #3a3a4e;
+            --dropdown-text: #e8e8e8;
+            --scrollbar-track: #2a2a3e;
+            --scrollbar-thumb: #667eea;
+            --store-color: #a78bfa;
+            --tab-bg: #2a2a3e;
+            --tab-active: #667eea;
+            --tab-text: #888;
+            --tab-active-text: #fff;
+            --remove-btn: #ff6b6b;
+            --remove-btn-hover: #e53935;
+            --add-btn: #51cf66;
+            --add-btn-hover: #43a047;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, var(--bg-gradient-start) 0%, var(--bg-gradient-end) 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            padding: 20px;
+            transition: var(--transition);
+        }
+
+        .container {
+            max-width: 620px;
+            width: 100%;
+            margin: 0 auto;
+        }
+
+        .store-header {
+            text-align: center;
+            padding: 20px 0 16px 0;
+            margin-bottom: 4px;
+        }
+
+        .store-header .logo {
+            font-size: 36px;
+            font-weight: 900;
+            letter-spacing: 4px;
+            color: var(--store-color);
+            text-shadow: 0 4px 20px rgba(102, 126, 234, 0.4);
+            transition: var(--transition);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .store-header .logo span {
+            color: #fbbf24;
+        }
+
+        .store-header .sub-logo {
+            font-size: 12px;
+            color: rgba(255,255,255,0.7);
+            letter-spacing: 6px;
+            text-transform: uppercase;
+            margin-top: 4px;
+        }
+
+        .main-card {
+            background: var(--card-bg);
+            border-radius: 20px;
+            padding: 35px;
+            width: 100%;
+            box-shadow: 0 20px 60px var(--shadow);
+            transition: var(--transition);
+            position: relative;
+            margin-bottom: 20px;
+        }
+
+        .theme-toggle {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: var(--input-bg);
+            border: 2px solid var(--input-border);
+            border-radius: 50%;
+            width: 44px;
+            height: 44px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: var(--transition);
+            font-size: 20px;
+            color: var(--text-primary);
+            z-index: 10;
+        }
+
+        .theme-toggle:hover {
+            transform: scale(1.1);
+            border-color: var(--input-focus);
+            box-shadow: 0 0 20px rgba(102, 126, 234, 0.2);
+        }
+
+        h1 {
+            color: var(--text-primary);
+            text-align: center;
+            margin-bottom: 8px;
+            font-size: 26px;
+            transition: var(--transition);
+        }
+
+        .subtitle {
+            color: var(--text-secondary);
+            text-align: center;
+            margin-bottom: 20px;
+            font-size: 13px;
+            transition: var(--transition);
+        }
+
+        /* ===== ВКЛАДКИ ===== */
+        .tabs {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .tab-btn {
+            flex: 1;
+            min-width: 80px;
+            padding: 10px 14px;
+            border: 2px solid var(--input-border);
+            border-radius: 12px;
+            background: var(--tab-bg);
+            color: var(--tab-text);
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            text-align: center;
+        }
+
+        .tab-btn:hover {
+            border-color: var(--input-focus);
+            background: var(--highlight-bg);
+        }
+
+        .tab-btn.active {
+            background: var(--tab-active);
+            color: var(--tab-active-text);
+            border-color: var(--tab-active);
+        }
+
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* ===== ВКЛАДКА "ДОБАВИТЬ ТОВАР" ===== */
+        .add-product-form {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .add-product-form .form-row {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .add-product-form .form-row input {
+            flex: 1;
+            min-width: 120px;
+            padding: 10px 14px;
+            border: 2px solid var(--input-border);
+            border-radius: 10px;
+            font-size: 14px;
+            background: var(--input-bg);
+            color: var(--text-primary);
+            outline: none;
+            transition: var(--transition);
+        }
+
+        .add-product-form .form-row input:focus {
+            border-color: var(--input-focus);
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.15);
+        }
+
+        .add-product-form .form-row input::placeholder {
+            color: var(--text-light);
+        }
+
+        .add-product-form .form-row select {
+            padding: 10px 14px;
+            border: 2px solid var(--input-border);
+            border-radius: 10px;
+            font-size: 14px;
+            background: var(--input-bg);
+            color: var(--text-primary);
+            outline: none;
+            transition: var(--transition);
+            cursor: pointer;
+        }
+
+        .add-product-form .form-row select:focus {
+            border-color: var(--input-focus);
+        }
+
+        .btn-add-product {
+            padding: 12px 24px;
+            background: linear-gradient(135deg, var(--add-btn) 0%, var(--add-btn-hover) 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .btn-add-product:hover {
+            transform: scale(1.02);
+            box-shadow: 0 4px 15px rgba(52, 168, 83, 0.4);
+        }
+
+        .btn-add-product:active {
+            transform: scale(0.98);
+        }
+
+        /* ===== ТОВАРЫ С ВОЗМОЖНОСТЬЮ УДАЛЕНИЯ ===== */
+        .product-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 12px;
+            background: var(--input-bg);
+            border: 1px solid var(--input-border);
+            border-radius: 8px;
+            font-size: 12px;
+            color: var(--text-primary);
+            transition: var(--transition);
+        }
+
+        .product-item .name {
+            font-weight: 500;
+            flex: 1;
+        }
+
+        .product-item .check {
+            font-size: 14px;
+            margin-left: 8px;
+        }
+
+        .product-item .qty {
+            font-size: 11px;
+            color: var(--text-light);
+            background: var(--highlight-bg);
+            padding: 0 8px;
+            border-radius: 10px;
+            margin-right: 8px;
+        }
+
+        .product-item .btn-remove {
+            background: var(--remove-btn);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            padding: 4px 10px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .product-item .btn-remove:hover {
+            background: var(--remove-btn-hover);
+            transform: scale(1.05);
+        }
+
+        .product-item .btn-remove:active {
+            transform: scale(0.95);
+        }
+
+        .product-category {
+            grid-column: 1 / -1;
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--input-focus);
+            padding: 8px 4px 4px 4px;
+            border-bottom: 2px solid var(--input-border);
+            margin-top: 4px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .product-category .cat-count {
+            font-size: 12px;
+            color: var(--text-light);
+            font-weight: 400;
+        }
+
+        .product-category .btn-remove-category {
+            background: var(--remove-btn);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            padding: 2px 12px;
+            font-size: 11px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .product-category .btn-remove-category:hover {
+            background: var(--remove-btn-hover);
+            transform: scale(1.05);
+        }
+
+        /* ===== ОСТАЛЬНЫЕ СТИЛИ ===== */
+        .purchase-section {
+            margin-bottom: 18px;
+        }
+
+        .purchase-toggle {
+            width: 100%;
+            padding: 12px 16px;
+            background: var(--input-bg);
+            border: 2px solid var(--input-border);
+            border-radius: 12px;
+            color: var(--text-primary);
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .purchase-toggle:hover {
+            border-color: var(--input-focus);
+            background: var(--highlight-bg);
+        }
+
+        .purchase-toggle .arrow {
+            transition: transform 0.3s ease;
+        }
+
+        .purchase-toggle .arrow.open {
+            transform: rotate(180deg);
+        }
+
+        .purchase-dropdown {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.4s ease, opacity 0.3s ease, margin 0.3s ease;
+            opacity: 0;
+            margin-top: 0;
+        }
+
+        .purchase-dropdown.open {
+            max-height: 500px;
+            opacity: 1;
+            margin-top: 10px;
+        }
+
+        .purchase-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 5px;
+            background: var(--result-bg);
+            border-radius: 12px;
+            padding: 8px;
+            border: 2px solid var(--input-border);
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .purchase-grid::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .purchase-grid::-webkit-scrollbar-track {
+            background: var(--scrollbar-track);
+            border-radius: 3px;
+        }
+
+        .purchase-grid::-webkit-scrollbar-thumb {
+            background: var(--scrollbar-thumb);
+            border-radius: 3px;
+        }
+
+        .purchase-item {
+            padding: 6px 10px;
+            background: var(--card-bg);
+            border: 1px solid var(--input-border);
+            border-radius: 6px;
+            cursor: pointer;
+            transition: var(--transition);
+            font-size: 11px;
+            color: var(--text-primary);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .purchase-item:hover {
+            border-color: var(--input-focus);
+            background: var(--dropdown-hover);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.15);
+        }
+
+        .purchase-item .model {
+            font-weight: 500;
+            font-size: 10px;
+            flex: 1;
+            min-width: 0;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .purchase-item .price {
+            font-weight: 700;
+            color: var(--final-color);
+            font-size: 12px;
+            white-space: nowrap;
+        }
+
+        .purchase-item .badge-type {
+            font-size: 8px;
+            background: var(--highlight-bg);
+            padding: 1px 6px;
+            border-radius: 8px;
+            color: var(--text-secondary);
+            border: 1px solid var(--input-border);
+            white-space: nowrap;
+        }
+
+        .purchase-item .flag {
+            font-size: 12px;
+        }
+
+        .purchase-category-header {
+            grid-column: 1 / -1;
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--input-focus);
+            padding: 4px 4px 2px 4px;
+            border-bottom: 2px solid var(--input-border);
+            margin-bottom: 2px;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .purchase-category-header .cat-count {
+            font-size: 10px;
+            color: var(--text-light);
+            font-weight: 400;
+        }
+
+        .selected-info {
+            font-size: 11px;
+            color: var(--text-light);
+            margin-top: 6px;
+            text-align: center;
+            transition: var(--transition);
+            min-height: 20px;
+        }
+
+        .input-group {
+            margin-bottom: 18px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 6px;
+            color: var(--text-secondary);
+            font-weight: 600;
+            font-size: 13px;
+            transition: var(--transition);
+        }
+
+        .input-wrapper {
+            position: relative;
+        }
+
+        .input-wrapper span {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-light);
+            font-weight: 600;
+            transition: var(--transition);
+        }
+
+        input[type="number"] {
+            width: 100%;
+            padding: 12px 15px 12px 35px;
+            font-size: 17px;
+            border: 2px solid var(--input-border);
+            border-radius: 12px;
+            transition: var(--transition);
+            outline: none;
+            background: var(--input-bg);
+            color: var(--text-primary);
+        }
+
+        input[type="number"]:focus {
+            border-color: var(--input-focus);
+            box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.15);
+            background: var(--card-bg);
+        }
+
+        input[type="number"]::placeholder {
+            color: var(--text-light);
+        }
+
+        .button-group {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        button {
+            flex: 1;
+            padding: 12px;
+            font-size: 15px;
+            font-weight: 600;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .btn-calc {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-calc:hover {
+            transform: scale(1.02);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-reset {
+            background: var(--btn-reset-bg);
+            color: var(--text-secondary);
+        }
+
+        .btn-reset:hover {
+            background: var(--btn-reset-hover);
+        }
+
+        .result-card {
+            background: var(--result-bg);
+            border-radius: 16px;
+            padding: 20px;
+            margin-top: 10px;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.4s ease;
+        }
+
+        .result-card.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .result-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid var(--result-border);
+            transition: var(--transition);
+        }
+
+        .result-item:last-child {
+            border-bottom: none;
+        }
+
+        .result-label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--text-secondary);
+            font-weight: 500;
+            font-size: 13px;
+            transition: var(--transition);
+        }
+
+        .result-label .icon {
+            font-size: 18px;
+        }
+
+        .result-value {
+            font-size: 18px;
+            font-weight: 700;
+            transition: var(--transition);
+        }
+
+        .result-value.card {
+            color: var(--card-color);
+        }
+
+        .result-value.cash {
+            color: var(--cash-color);
+        }
+
+        .result-value.diff {
+            color: var(--diff-color);
+        }
+
+        .result-value.final {
+            color: var(--final-color);
+            font-size: 20px;
+        }
+
+        .badge {
+            display: inline-block;
+            background: var(--badge-bg);
+            color: var(--badge-text);
+            padding: 2px 8px;
+            border-radius: 20px;
+            font-size: 10px;
+            margin-left: 6px;
+            transition: var(--transition);
+        }
+
+        .highlight-box {
+            background: var(--highlight-bg);
+            border-radius: 12px;
+            padding: 12px;
+            margin-top: 12px;
+            text-align: center;
+            border: 2px solid var(--highlight-border);
+            transition: var(--transition);
+        }
+
+        .highlight-box .label {
+            color: var(--text-secondary);
+            font-size: 12px;
+            transition: var(--transition);
+        }
+
+        .highlight-box .value {
+            color: var(--final-color);
+            font-size: 22px;
+            font-weight: 800;
+            margin-top: 4px;
+            transition: var(--transition);
+        }
+
+        .formula-info {
+            margin-top: 16px;
+            padding: 12px;
+            background: var(--formula-bg);
+            border-radius: 12px;
+            font-size: 11px;
+            color: var(--text-secondary);
+            line-height: 1.8;
+            transition: var(--transition);
+        }
+
+        .formula-info code {
+            background: var(--card-bg);
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 11px;
+            color: var(--input-focus);
+            transition: var(--transition);
+        }
+
+        .search-box {
+            width: 100%;
+            padding: 8px 12px;
+            margin-bottom: 8px;
+            border: 2px solid var(--input-border);
+            border-radius: 8px;
+            background: var(--input-bg);
+            color: var(--text-primary);
+            font-size: 13px;
+            outline: none;
+            transition: var(--transition);
+        }
+
+        .search-box:focus {
+            border-color: var(--input-focus);
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.15);
+        }
+
+        .search-box::placeholder {
+            color: var(--text-light);
+        }
+
+        .stats {
+            font-size: 11px;
+            color: var(--text-light);
+            text-align: center;
+            margin-top: 6px;
+        }
+
+        .products-section {
+            background: var(--card-bg);
+            border-radius: 20px;
+            padding: 25px;
+            box-shadow: 0 20px 60px var(--shadow);
+            transition: var(--transition);
+        }
+
+        .products-title {
+            font-size: 18px;
+            color: var(--text-primary);
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .products-title .count {
+            background: var(--badge-bg);
+            color: var(--badge-text);
+            padding: 2px 12px;
+            border-radius: 20px;
+            font-size: 13px;
+        }
+
+        .product-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 6px;
+        }
+
+        @media (max-width: 600px) {
+            body {
+                padding: 10px;
+            }
+
+            .main-card {
+                padding: 18px;
+            }
+
+            .result-item {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 4px;
+            }
+
+            .result-value {
+                font-size: 16px;
+            }
+
+            .button-group {
+                flex-direction: column;
+            }
+
+            .theme-toggle {
+                top: 12px;
+                right: 12px;
+                width: 36px;
+                height: 36px;
+                font-size: 16px;
+            }
+
+            h1 {
+                font-size: 22px;
+            }
+
+            .purchase-grid {
+                grid-template-columns: 1fr;
+                max-height: 300px;
+            }
+
+            .product-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .products-section {
+                padding: 16px;
+            }
+
+            .store-header .logo {
+                font-size: 28px;
+                letter-spacing: 2px;
+            }
+
+            .tabs {
+                flex-direction: column;
+            }
+
+            .tab-btn {
+                min-width: auto;
+            }
+
+            .add-product-form .form-row {
+                flex-direction: column;
+            }
+
+            .add-product-form .form-row input,
+            .add-product-form .form-row select {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="store-header">
+            <div class="logo">ZXC<span>STORE</span></div>
+            <div class="sub-logo">📱 Цены • Калькулятор • Учёт</div>
+        </div>
+
+        <div class="main-card">
+            <button class="theme-toggle" id="themeToggle" onclick="toggleTheme()" title="Переключить тему">
+                🌙
+            </button>
+
+            <h1>💳 Калькулятор цен</h1>
+            <p class="subtitle">Карта vs Наличные + округление до 990</p>
+
+            <!-- Вкладки -->
+            <div class="tabs">
+                <button class="tab-btn active" data-tab="tab-calculator" onclick="switchTab('tab-calculator')">🧮 Калькулятор</button>
+                <button class="tab-btn" data-tab="tab-add-product" onclick="switchTab('tab-add-product')">➕ Добавить товар</button>
+                <button class="tab-btn" data-tab="tab-products" onclick="switchTab('tab-products')">📦 Товары</button>
+            </div>
+
+            <!-- ===== ВКЛАДКА: КАЛЬКУЛЯТОР ===== -->
+            <div class="tab-content active" id="tab-calculator">
+                <div class="purchase-section">
+                    <button class="purchase-toggle" id="purchaseToggle" onclick="togglePurchaseList()">
+                        <span>📋 Закупочные цены iPhone</span>
+                        <span class="arrow" id="arrowIcon">▼</span>
+                    </button>
+                    <div class="purchase-dropdown" id="purchaseDropdown">
+                        <input type="text" class="search-box" id="searchInput" placeholder="🔍 Поиск по модели..." oninput="filterPrices()">
+                        <div class="purchase-grid" id="purchaseGrid"></div>
+                        <div class="selected-info" id="selectedInfo">Нажмите на товар, чтобы подставить цену</div>
+                        <div class="stats" id="statsInfo"></div>
+                    </div>
+                </div>
+
+                <div class="input-group">
+                    <label for="priceInput">Введите начальную цену (₽)</label>
+                    <div class="input-wrapper">
+                        <span>₽</span>
+                        <input type="number" id="priceInput" placeholder="100000" step="0.01" min="0">
+                    </div>
+                </div>
+
+                <div class="button-group">
+                    <button class="btn-calc" onclick="calculate()">🧮 Рассчитать</button>
+                    <button class="btn-reset" onclick="resetAll()">↺ Очистить</button>
+                </div>
+
+                <div class="result-card" id="resultCard">
+                    <div class="result-item">
+                        <span class="result-label"><span class="icon">💳</span> Карта (без окр.)</span>
+                        <span class="result-value card" id="cardPrice">0 ₽</span>
+                    </div>
+                    <div class="result-item">
+                        <span class="result-label"><span class="icon">💵</span> Наличные (без окр.)</span>
+                        <span class="result-value cash" id="cashPrice">0 ₽</span>
+                    </div>
+                    <div class="result-item" style="border-bottom: 2px dashed var(--result-border);">
+                        <span class="result-label"><span class="icon">📊</span> Разница</span>
+                        <span class="result-value diff" id="diffPrice">0 ₽</span>
+                    </div>
+                    <div class="result-item" style="background: var(--highlight-bg); margin-top: 6px; border-radius: 8px; padding: 10px 12px; border-bottom: 1px solid var(--highlight-border);">
+                        <span class="result-label"><span class="icon">💎</span> Карта <span class="badge">+990</span></span>
+                        <span class="result-value final" id="cardFinal">0 ₽</span>
+                    </div>
+                    <div class="result-item" style="background: var(--highlight-bg); border-radius: 8px; padding: 10px 12px;">
+                        <span class="result-label"><span class="icon">💎</span> Наличные <span class="badge">+990</span></span>
+                        <span class="result-value final" id="cashFinal">0 ₽</span>
+                    </div>
+                    <div class="highlight-box">
+                        <div class="label">Карта дороже на</div>
+                        <div class="value" id="percentDiff">0%</div>
+                    </div>
+                </div>
+
+                <div class="formula-info">
+                    <strong>Формулы расчета:</strong><br>
+                    💳 <strong>Карта:</strong> <code>(цена + 12%) + 2000 + 20%</code> → округление до <strong>990</strong> вверх<br>
+                    💵 <strong>Наличные:</strong> <code>(цена + 12%) + 2000</code> → округление до <strong>990</strong> вверх
+                </div>
+            </div>
+
+            <!-- ===== ВКЛАДКА: ДОБАВИТЬ ТОВАР ===== -->
+            <div class="tab-content" id="tab-add-product">
+                <div class="add-product-form">
+                    <div class="form-row">
+                        <input type="text" id="newProductName" placeholder="📱 Название товара" />
+                        <input type="number" id="newProductQty" placeholder="Количество" min="0" value="1" />
+                        <select id="newProductCategory">
+                            <option value="Новые iPhone">Новые iPhone</option>
+                            <option value="Asis">Asis</option>
+                            <option value="Б/У телефоны">Б/У телефоны</option>
+                            <option value="Наушники">Наушники</option>
+                            <option value="Apple Watch">Apple Watch</option>
+                            <option value="Чехлы оригинал">Чехлы оригинал</option>
+                            <option value="Чехлы Pitaka">Чехлы Pitaka</option>
+                            <option value="Адаптеры">Адаптеры</option>
+                            <option value="Кабели оригинал">Кабели оригинал</option>
+                            <option value="Игрушки">Игрушки</option>
+                            <option value="Карты">Карты</option>
+                            <option value="Другое">Другое</option>
+                        </select>
+                    </div>
+                    <button class="btn-add-product" onclick="addProduct()">➕ Добавить товар</button>
+                </div>
+
+                <div style="font-size: 13px; color: var(--text-secondary); text-align: center; padding: 10px;">
+                    💡 Введите название, количество и выберите категорию
+                </div>
+            </div>
+
+            <!-- ===== ВКЛАДКА: ТОВАРЫ ===== -->
+            <div class="tab-content" id="tab-products">
+                <div id="productList"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ===== ТОВАРЫ =====
+        let productsData = {
+            'Новые iPhone': [
+                { name: 'Samsung s25 256 mint', qty: 1 },
+                { name: '13 128 синий (сим+есим)', qty: 1 },
+                { name: '13 128 белый', qty: 1 },
+                { name: '16 128 белый', qty: 1 },
+                { name: '16 128 синий', qty: 1 },
+                { name: '16 256 розовый сим+есим', qty: 1 },
+                { name: '16 Pro 128 белый', qty: 1 },
+                { name: '16 Pro Max 256 desert sim+esim', qty: 1 },
+                { name: '17 256 черный (есим)', qty: 1 },
+                { name: '17 256 зеленый (есим)', qty: 1 },
+                { name: '17 256 черный (сим+есим)', qty: 1 },
+                { name: '17 256 зеленый (сим+есим)', qty: 1 },
+                { name: '17 256 белый (сим+есим)', qty: 1 },
+                { name: '17 256 синий (сим+есим)', qty: 1 },
+                { name: '17 Pro 256 Silver сим+есим', qty: 1 },
+                { name: '17 Pro 256 синий (есим)', qty: 1 },
+                { name: '17 Pro 256 Оранж (есим)', qty: 1 },
+                { name: '17 Pro 256 Silver Sim+eSim', qty: 1 },
+                { name: '17 Pro Max 256 оранжевый (есим)', qty: 1 },
+                { name: '17 Pro Max 256 белый (есим)', qty: 1 },
+                { name: '17 Pro Max 512 оранжевый (есим)', qty: 1 }
+            ],
+            'Asis': [
+                { name: 'Asis 16 Pro 512 black', qty: 1 }
+            ],
+            'Б/У телефоны': [
+                { name: '14 Pro 256 White', qty: 1 },
+                { name: '14 Pro Max 256 фиолетовый', qty: 1 },
+                { name: '15 Pro 128 Gray Sim/eSim', qty: 1 },
+                { name: '15 Pro 256 синий', qty: 1 },
+                { name: '16e 128 White Sim/eSim', qty: 1 }
+            ],
+            'Наушники': [
+                { name: 'AirPods Pro 2', qty: 1 },
+                { name: 'AirPods 4 ANC', qty: 1 }
+            ],
+            'Apple Watch': [
+                { name: 'Watch SE 2 40mm midnight', qty: 1 },
+                { name: 'Watch Series 10 42mm Jet Black', qty: 1 },
+                { name: 'Watch Series 10 46mm Silver', qty: 1 },
+                { name: 'Watch Series 11 46mm Space Gray', qty: 1 }
+            ],
+            'Чехлы оригинал': [
+                { name: '17 Pro оранжевый ткань', qty: 1 },
+                { name: '17 Pro Max синий ткань', qty: 1 },
+                { name: '17 Pro Max фиолетовый', qty: 1 }
+            ],
+            'Чехлы Pitaka': [
+                { name: '17 Pro', qty: 1 }
+            ],
+            'Адаптеры': [
+                { name: 'Адаптер 20W оригинал', qty: 14 },
+                { name: 'Адаптер 30W', qty: 1 },
+                { name: 'Адаптер 20W', qty: 7 },
+                { name: 'Адаптер 45W оригинал', qty: 3 },
+                { name: 'Адаптер 120W', qty: 2 },
+                { name: 'Адаптер 40W', qty: 0 }
+            ],
+            'Кабели оригинал': [
+                { name: 'USB - Lightning', qty: 1 },
+                { name: 'USB-C - Lightning', qty: 2 },
+                { name: 'USB-C - USB-C', qty: 3 }
+            ],
+            'Игрушки': [
+                { name: 'Labubu Cola', qty: 1 },
+                { name: 'Labubu CheckMate', qty: 1 }
+            ],
+            'Карты': [
+                { name: 'Карты Халва', qty: 36 }
+            ]
+        };
+
+        // ===== ПОЛНЫЙ СПИСОК ЗАКУПОЧНЫХ ЦЕН =====
+        const purchasePrices = [
+            { model: '15 128GB Black', flag: '🇮🇳', type: '', price: 49200 },
+            { model: '15 128GB Blue', flag: '🇮🇳', type: '', price: 48500 },
+            { model: '15 128GB Green', flag: '🇮🇳', type: '', price: 55000 },
+            { model: '15 128GB Yellow', flag: '🇮🇳', type: '', price: 54000 },
+            { model: '15 256GB Black', flag: '🇮🇳', type: '', price: 56700 },
+            { model: '15 256GB Blue', flag: '🇮🇳', type: '', price: 56200 },
+            { model: '15 256GB Pink', flag: '🇮🇳', type: '', price: 61000 },
+            { model: '15 512GB Green', flag: '🇺🇸', type: '', price: 59000 },
+            { model: '15 512GB Green', flag: '🇮🇳', type: '', price: 67000 },
+            { model: '15 512GB Yellow', flag: '🇦🇪🇪🇺', type: '', price: 62300 },
+            { model: '15 Plus 128GB Blue', flag: '🇮🇳', type: '', price: 58000 },
+            { model: '15 Plus 128GB Green', flag: '🇮🇳', type: '', price: 56000 },
+            { model: '15 Plus 128GB Pink', flag: '🇮🇳', type: '', price: 51600 },
+            { model: '15 Plus 512GB Blue', flag: '🇮🇳', type: '', price: 58000 },
+            { model: '15 Plus 512GB Green', flag: '🇮🇳', type: '', price: 58100 },
+            { model: '15 Plus 512GB Pink', flag: '🇮🇳', type: '', price: 58100 },
+            { model: '15 Plus 512GB Yellow', flag: '🇯🇵', type: '', price: 57200 },
+            { model: '15 Pro 128GB Blue', flag: '🇦🇪🇪🇺', type: '', price: 71200 },
+            { model: '15 Pro 128 Blue', flag: '🇦🇪', type: '', price: 71200 },
+            { model: '15 Pro Max 256GB White', flag: '🇨🇳', type: '2Sim', price: 80200 },
+            { model: '15 Pro Max 256 Black', flag: '🇦🇪', type: '', price: 85500 },
+            { model: '15 Pro Max 256 White', flag: '🇨🇳', type: '', price: 84700 },
+            { model: '15 Pro Max 256 White', flag: '🇦🇪', type: '', price: 85800 },
+            { model: '15 Pro Max 256 Blue', flag: '🇦🇪', type: '', price: 85800 },
+            { model: '15 Pro Max 256 Natural', flag: '🇦🇪', type: '', price: 85700 },
+            { model: '16E 128 Black', flag: '🇺🇸', type: '', price: 40200 },
+            { model: '16E 128 Black', flag: '🇮🇳', type: '', price: 44100 },
+            { model: '16E 256 Black', flag: '🇨🇳', type: '', price: 43200 },
+            { model: '16E 256 White', flag: '🇨🇳', type: '🏎️', price: 43200 },
+            { model: '16 128 Black', flag: '🇮🇳', type: '', price: 57000 },
+            { model: '16 128 White', flag: '🇮🇳', type: '', price: 57000 },
+            { model: '16 128 White', flag: '🇮🇳', type: 'Актив', price: 53300 },
+            { model: '16 128 Pink', flag: '🇮🇳', type: '', price: 57500 },
+            { model: '16 128 Teal', flag: '🇮🇳', type: '', price: 56100 },
+            { model: '16 128 Teal', flag: '🇮🇳', type: 'Актив', price: 51800 },
+            { model: '16 128 Ultramarine', flag: '🇯🇵', type: '', price: 57000 },
+            { model: '16 256 Black', flag: '🇯🇵', type: '', price: 65800 },
+            { model: '16 256 Black', flag: '🇮🇳', type: '', price: 65900 },
+            { model: '16 256 White', flag: '🇮🇳', type: '', price: 67000 },
+            { model: '16 256 Pink', flag: '🇮🇳', type: '', price: 65600 },
+            { model: '16 256 Pink', flag: '🇮🇳', type: 'Актив', price: 59100 },
+            { model: '16 256 Teal', flag: '🇯🇵', type: '', price: 66500 },
+            { model: '16 256 Ultramarine', flag: '🇯🇵', type: '', price: 65600 },
+            { model: '16 512 Black', flag: '🇯🇵', type: '', price: 70000 },
+            { model: '16 512 Ultramarine', flag: '🇯🇵', type: '', price: 70000 },
+            { model: '16 Plus 128 Black', flag: '🇯🇵', type: '', price: 60400 },
+            { model: '16 Plus 128 White', flag: '🇮🇳', type: '', price: 60500 },
+            { model: '16 Plus 128 Pink', flag: '🇮🇳', type: '', price: 61500 },
+            { model: '16 Plus 128 Teal', flag: '🇮🇳', type: '', price: 61500 },
+            { model: '16 Plus 128 Ultramarine', flag: '🇮🇳', type: '', price: 60600 },
+            { model: '16 Plus 256 Black', flag: '🇮🇳', type: '', price: 72000 },
+            { model: '16 Plus 256 Pink', flag: '🇮🇳', type: '', price: 70200 },
+            { model: '16 Plus 256 Teal', flag: '🇮🇳', type: '', price: 70200 },
+            { model: '16 Plus 256 Ultramarine', flag: '🇮🇳', type: '', price: 70200 },
+            { model: '16 Plus 512 Black', flag: '🇺🇸', type: '', price: 71400 },
+            { model: '16 Plus 512 Black', flag: '🇮🇳', type: '', price: 82500 },
+            { model: '16 Plus 512 White', flag: '🇮🇳', type: '', price: 82500 },
+            { model: '16 Plus 512 Pink', flag: '🇺🇸', type: '', price: 71400 },
+            { model: '16 Plus 512 Pink', flag: '🇮🇳', type: '', price: 83700 },
+            { model: '16 Plus 512 Teal', flag: '🇮🇳', type: '', price: 83000 },
+            { model: '16 Plus 512 Ultramarine', flag: '🇮🇳', type: '', price: 83000 },
+            { model: '16 Pro 128 Black', flag: '🇨🇳', type: '', price: 80400 },
+            { model: '16 Pro 128 White', flag: '🇨🇳', type: '', price: 72200 },
+            { model: '16 Pro 128 Natural', flag: '🇨🇳', type: '', price: 78300 },
+            { model: '16 Pro 128 Desert', flag: '🇨🇳', type: '', price: 79400 },
+            { model: '16 Pro 1TB White', flag: '🇦🇪', type: '', price: 109200 },
+            { model: '16 Pro Max 256 Natural', flag: '🇦🇪', type: '', price: 94700 },
+            { model: '16 Pro Max 256 Desert', flag: '🇦🇪', type: '', price: 88200 },
+            { model: '16 Pro Max 512 Black', flag: '🇺🇸', type: '', price: 98000 },
+            { model: '16 Pro Max 1TB Natural', flag: '🇦🇪', type: '', price: 114700 },
+            { model: '16 Pro Max 1TB Desert', flag: '🇦🇪', type: '', price: 114700 },
+            { model: '17e 256 Black', flag: '', type: 'eSim', price: 49500 },
+            { model: '17e 256 Pink', flag: '', type: 'eSim', price: 48300 },
+            { model: '17e 512 Black', flag: '', type: 'eSim', price: 60000 },
+            { model: '17e 512 White', flag: '', type: 'eSim', price: 60000 },
+            { model: '17e 256 Black', flag: '', type: '1Sim+eSim', price: 52500 },
+            { model: '17e 256 White', flag: '', type: '1Sim+eSim', price: 51800 },
+            { model: '17e 256 Pink', flag: '', type: '1Sim+eSim', price: 52400 },
+            { model: '17e 256 Pink', flag: '', type: '1Sim+eSim Актив', price: 48700 },
+            { model: '17 256 Black', flag: '', type: 'eSim', price: 71200 },
+            { model: '17 256 Sage', flag: '', type: 'eSim', price: 67700 },
+            { model: '17 512 Black', flag: '', type: 'eSim', price: 82200 },
+            { model: '17 512 Black', flag: '', type: 'eSim Актив', price: 76500 },
+            { model: '17 256 Black', flag: '', type: '1Sim+eSim', price: 70300 },
+            { model: '17 256 Black', flag: '', type: '1Sim+eSim Актив', price: 68500 },
+            { model: '17 256 White', flag: '', type: '1Sim+eSim', price: 71000 },
+            { model: '17 256 White', flag: '', type: '1Sim+eSim Актив', price: 67700 },
+            { model: '17 256 Blue', flag: '', type: '1Sim+eSim', price: 69000 },
+            { model: '17 256 Blue', flag: '', type: '1Sim+eSim Актив', price: 67700 },
+            { model: '17 256 Sage', flag: '', type: '1Sim+eSim', price: 71300 },
+            { model: '17 256 Sage', flag: '', type: '1Sim+eSim Актив', price: 68200 },
+            { model: '17 256 Lavender', flag: '', type: '1Sim+eSim', price: 70800 },
+            { model: '17 256 Lavender', flag: '', type: '1Sim+eSim Актив', price: 67700 },
+            { model: '17 512 Black', flag: '', type: '1Sim+eSim', price: 84700 },
+            { model: '17 512 Black', flag: '', type: '1Sim+eSim Актив', price: 81200 },
+            { model: '17 512 White', flag: '', type: '1Sim+eSim', price: 85700 },
+            { model: '17 512 White', flag: '', type: '1Sim+eSim Актив', price: 82700 },
+            { model: '17 512 Blue', flag: '', type: '1Sim+eSim', price: 85500 },
+            { model: '17 512 Blue', flag: '', type: '1Sim+eSim Актив', price: 81700 },
+            { model: '17 512 Sage', flag: '', type: '1Sim+eSim', price: 85600 },
+            { model: '17 512 Sage', flag: '', type: '1Sim+eSim Актив', price: 82700 },
+            { model: '17 512 Lavender', flag: '', type: '1Sim+eSim Актив', price: 83200 },
+            { model: '17 Air 256 Black', flag: '', type: 'eSim', price: 69000 },
+            { model: '17 Air 256 White', flag: '', type: 'eSim', price: 68600 },
+            { model: '17 Air 256 Gold', flag: '', type: 'eSim', price: 69900 },
+            { model: '17 Air 256 Blue', flag: '', type: 'eSim', price: 68700 },
+            { model: '17 Air 512 Black', flag: '', type: 'eSim', price: 79000 },
+            { model: '17 Air 512 Gold', flag: '', type: 'eSim', price: 76400 },
+            { model: '17 Air 512 Blue', flag: '', type: 'eSim', price: 75900 },
+            { model: '17 Air 1TB Black', flag: '', type: 'eSim 🏎️', price: 87500 },
+            { model: '17 Air 1TB Gold', flag: '', type: 'eSim', price: 85200 },
+            { model: '17 Air 1TB Blue', flag: '', type: 'eSim', price: 82800 },
+            { model: '17 Pro 256 Silver', flag: '', type: 'eSim', price: 90000 },
+            { model: '17 Pro 256 Blue', flag: '', type: 'eSim', price: 89200 },
+            { model: '17 Pro 256 Orange', flag: '', type: 'eSim', price: 87000 },
+            { model: '17 Pro 512 Silver', flag: '', type: 'eSim', price: 105500 },
+            { model: '17 Pro 512 Blue', flag: '', type: 'eSim', price: 105900 },
+            { model: '17 Pro 512 Orange', flag: '', type: 'eSim', price: 105900 },
+            { model: '17 Pro 1TB Blue', flag: '', type: 'eSim', price: 120000 },
+            { model: '17 Pro 1TB Orange', flag: '', type: 'eSim', price: 119900 },
+            { model: '17 Pro 256 Blue', flag: '', type: '1Sim+eSim', price: 94000 },
+            { model: '17 Pro 256 Orange', flag: '', type: '1Sim+eSim', price: 94100 },
+            { model: '17 Pro Max 256 Silver', flag: '', type: 'eSim', price: 95200 },
+            { model: '17 Pro Max 256 Blue', flag: '', type: 'eSim', price: 95500 },
+            { model: '17 Pro Max 256 Orange', flag: '', type: 'eSim', price: 95200 },
+            { model: '17 Pro Max 512 Silver', flag: '', type: 'eSim', price: 112200 },
+            { model: '17 Pro Max 512 Blue', flag: '', type: 'eSim', price: 112000 },
+            { model: '17 Pro Max 512 Orange', flag: '', type: 'eSim', price: 112500 },
+            { model: '17 Pro Max 1TB Silver', flag: '', type: 'eSim', price: 127200 },
+            { model: '17 Pro Max 1TB Blue', flag: '', type: 'eSim', price: 127200 },
+            { model: '17 Pro Max 1TB Orange', flag: '', type: 'eSim', price: 127200 },
+            { model: '17 Pro Max 2TB Silver', flag: '', type: 'eSim', price: 152800 },
+            { model: '17 Pro Max 2TB Blue', flag: '', type: 'eSim', price: 146200 },
+            { model: '17 Pro Max 2TB Orange', flag: '', type: 'eSim', price: 143000 },
+            { model: '17 Pro Max 256 Silver', flag: '', type: '1Sim+eSim', price: 105900 },
+            { model: '17 Pro Max 256 Blue', flag: '', type: '1Sim+eSim', price: 104800 },
+            { model: '17 Pro Max 256 Orange', flag: '', type: '1Sim+eSim', price: 104700 },
+            { model: '17 Pro Max 512 Silver', flag: '', type: '1Sim+eSim', price: 122800 },
+            { model: '17 Pro Max 512 Blue', flag: '', type: '1Sim+eSim', price: 120200 },
+            { model: '17 Pro Max 512 Orange', flag: '', type: '1Sim+eSim', price: 120200 },
+            { model: '17 Pro Max 1TB Silver', flag: '', type: '1Sim+eSim', price: 138400 },
+            { model: '17 Pro Max 1TB Blue', flag: '', type: '1Sim+eSim', price: 135400 },
+            { model: '17 Pro Max 1TB Orange', flag: '', type: '1Sim+eSim', price: 138500 },
+            { model: '17 Pro Max 2TB Silver', flag: '', type: '1Sim+eSim', price: 164000 },
+            { model: '17 Pro Max 2TB Blue', flag: '', type: '1Sim+eSim', price: 164200 },
+            { model: '17 Pro Max 2TB Orange', flag: '', type: '1Sim+eSim', price: 163200 }
+        ];
+
+        let filteredPrices = [...purchasePrices];
+
+        // ===== ФУНКЦИИ =====
+        function roundUpTo990(value) {
+            if (value <= 0) return 990;
+            const remainder = value % 1000;
+            if (remainder <= 990) {
+                return Math.floor(value / 1000) * 1000 + 990;
+            } else {
+                return (Math.floor(value / 1000) + 1) * 1000 + 990;
+            }
+        }
+
+        // ===== ДОБАВЛЕНИЕ ТОВАРА =====
+        function addProduct() {
+            const nameInput = document.getElementById('newProductName');
+            const qtyInput = document.getElementById('newProductQty');
+            const categorySelect = document.getElementById('newProductCategory');
+
+            const name = nameInput.value.trim();
+            const qty = parseInt(qtyInput.value) || 1;
+            const category = categorySelect.value;
+
+            if (!name) {
+                alert('❌ Введите название товара!');
+                nameInput.focus();
+                return;
+            }
+
+            if (qty < 0) {
+                alert('❌ Количество не может быть отрицательным!');
+                qtyInput.focus();
+                return;
+            }
+
+            // Добавляем товар в категорию
+            if (!productsData[category]) {
+                productsData[category] = [];
+            }
+
+            // Проверяем, есть ли уже такой товар
+            const existing = productsData[category].find(item => item.name.toLowerCase() === name.toLowerCase());
+            if (existing) {
+                if (confirm(`❓ Товар "${name}" уже есть в категории "${category}". Добавить ещё один?`)) {
+                    productsData[category].push({ name: name, qty: qty });
+                } else {
+                    return;
+                }
+            } else {
+                productsData[category].push({ name: name, qty: qty });
+            }
+
+            // Очищаем поля
+            nameInput.value = '';
+            qtyInput.value = '1';
+
+            // Обновляем список
+            renderProducts();
+            showToast(`✅ Товар "${name}" добавлен в категорию "${category}"`);
+
+            // Сохраняем в localStorage
+            saveProductsToStorage();
+        }
+
+        // ===== УДАЛЕНИЕ ТОВАРА =====
+        function removeProduct(category, index) {
+            if (!confirm(`❓ Удалить товар "${productsData[category][index].name}"?`)) return;
+            
+            productsData[category].splice(index, 1);
+            
+            // Если категория пуста, удаляем её
+            if (productsData[category].length === 0) {
+                delete productsData[category];
+            }
+            
+            renderProducts();
+            saveProductsToStorage();
+            showToast('🗑 Товар удалён');
+        }
+
+        // ===== УДАЛЕНИЕ КАТЕГОРИИ =====
+        function removeCategory(category) {
+            if (!confirm(`❓ Удалить всю категорию "${category}" (${productsData[category].length} товаров)?`)) return;
+            
+            delete productsData[category];
+            renderProducts();
+            saveProductsToStorage();
+            showToast('🗑 Категория удалена');
+        }
+
+        // ===== ОТОБРАЖЕНИЕ ТОВАРОВ =====
+        function renderProducts() {
+            const container = document.getElementById('productList');
+            let html = '';
+            let totalItems = 0;
+
+            // Сортируем категории
+            const sortedCategories = Object.keys(productsData).sort();
+
+            for (const category of sortedCategories) {
+                const items = productsData[category];
+                const catCount = items.reduce((sum, item) => sum + item.qty, 0);
+                totalItems += catCount;
+
+                html += `
+                    <div class="product-category">
+                        <span>
+                            ${category}
+                            <span class="cat-count">${catCount} шт</span>
+                        </span>
+                        <button class="btn-remove-category" onclick="removeCategory('${category}')">🗑 Удалить категорию</button>
+                    </div>
+                `;
+
+                items.forEach((item, index) => {
+                    const check = item.qty > 0 ? '✅' : '❌';
+                    html += `
+                        <div class="product-item">
+                            <span class="name">${item.name}</span>
+                            <span>
+                                <span class="qty">×${item.qty}</span>
+                                <span class="check">${check}</span>
+                                <button class="btn-remove" onclick="removeProduct('${category}', ${index})">✕</button>
+                            </span>
+                        </div>
+                    `;
+                });
+            }
+
+            if (Object.keys(productsData).length === 0) {
+                html = `
+                    <div style="text-align:center;padding:40px 20px;color:var(--text-light);">
+                        📭 Нет товаров<br>
+                        <span style="font-size:13px;">Перейдите на вкладку "Добавить товар"</span>
+                    </div>
+                `;
+            }
+
+            html = `
+                <div class="products-title">
+                    📦 Все товары
+                    <span class="count">${totalItems} шт</span>
+                </div>
+                <div class="product-grid">
+                    ${html}
+                </div>
+            `;
+
+            container.innerHTML = html;
+        }
+
+        // ===== СОХРАНЕНИЕ В LOCALSTORAGE =====
+        function saveProductsToStorage() {
+            try {
+                localStorage.setItem('productsData', JSON.stringify(productsData));
+            } catch (e) {
+                console.log('Ошибка сохранения');
+            }
+        }
+
+        function loadProductsFromStorage() {
+            try {
+                const saved = localStorage.getItem('productsData');
+                if (saved) {
+                    const parsed = JSON.parse(saved);
+                    if (typeof parsed === 'object' && Object.keys(parsed).length > 0) {
+                        productsData = parsed;
+                    }
+                }
+            } catch (e) {
+                console.log('Ошибка загрузки');
+            }
+        }
+
+        // ===== ВКЛАДКИ =====
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(el => {
+                el.classList.remove('active');
+            });
+            document.querySelectorAll('.tab-btn').forEach(el => {
+                el.classList.remove('active');
+            });
+            document.getElementById(tabId).classList.add('active');
+            document.querySelector(`[data-tab="${tabId}"]`).classList.add('active');
+
+            if (tabId === 'tab-products') {
+                renderProducts();
+            }
+            if (tabId === 'tab-add-product') {
+                document.getElementById('newProductName').focus();
+            }
+        }
+
+        // ===== ЗАКУПОЧНЫЕ ЦЕНЫ =====
+        function togglePurchaseList() {
+            const dropdown = document.getElementById('purchaseDropdown');
+            const arrow = document.getElementById('arrowIcon');
+            dropdown.classList.toggle('open');
+            arrow.classList.toggle('open');
+        }
+
+        function filterPrices() {
+            const query = document.getElementById('searchInput').value.toLowerCase().trim();
+            if (!query) {
+                filteredPrices = [...purchasePrices];
+            } else {
+                filteredPrices = purchasePrices.filter(item => 
+                    item.model.toLowerCase().includes(query) || 
+                    item.flag.toLowerCase().includes(query) ||
+                    item.type.toLowerCase().includes(query)
+                );
+            }
+            renderPurchasePrices();
+        }
+
+        function setPurchasePrice(price, model, flag, type) {
+            document.getElementById('priceInput').value = price;
+            document.getElementById('priceInput').style.borderColor = '#34a853';
+            setTimeout(() => {
+                document.getElementById('priceInput').style.borderColor = 'var(--input-border)';
+            }, 2000);
+            
+            const info = document.getElementById('selectedInfo');
+            const flagDisplay = flag ? ` ${flag}` : '';
+            const typeDisplay = type ? ` (${type})` : '';
+            info.textContent = `✅ Выбрано: ${model}${flagDisplay}${typeDisplay} — ${price.toLocaleString()} ₽`;
+            info.style.color = '#34a853';
+            
+            calculate();
+            
+            const dropdown = document.getElementById('purchaseDropdown');
+            const arrow = document.getElementById('arrowIcon');
+            dropdown.classList.remove('open');
+            arrow.classList.remove('open');
+        }
+
+        function renderPurchasePrices() {
+            const grid = document.getElementById('purchaseGrid');
+            let html = '';
+            
+            const groups = {};
+            filteredPrices.forEach(item => {
+                const key = item.model;
+                if (!groups[key]) groups[key] = [];
+                groups[key].push(item);
+            });
+
+            for (const [model, items] of Object.entries(groups)) {
+                const count = items.length;
+                html += `<div class="purchase-category-header">${model} <span class="cat-count">${count} вар.</span></div>`;
+                items.forEach(item => {
+                    html += `
+                        <div class="purchase-item" onclick="setPurchasePrice(${item.price}, '${item.model}', '${item.flag}', '${item.type}')">
+                            <span class="model">
+                                <span class="flag">${item.flag}</span>
+                                <span class="badge-type">${item.type || 'Стандарт'}</span>
+                            </span>
+                            <span class="price">${item.price.toLocaleString()} ₽</span>
+                        </div>
+                    `;
+                });
+            }
+            
+            if (!filteredPrices.length) {
+                html = `<div style="grid-column:1/-1;text-align:center;padding:20px;color:var(--text-light);">❌ Ничего не найдено</div>`;
+            }
+            
+            grid.innerHTML = html;
+            
+            const stats = document.getElementById('statsInfo');
+            stats.textContent = `Всего: ${purchasePrices.length} позиций • Найдено: ${filteredPrices.length}`;
+        }
+
+        // ===== ТЕМА =====
+        function toggleTheme() {
+            const html = document.documentElement;
+            const currentTheme = html.getAttribute('data-theme');
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            html.setAttribute('data-theme', newTheme);
+            const btn = document.getElementById('themeToggle');
+            btn.textContent = newTheme === 'dark' ? '☀️' : '🌙';
+            localStorage.setItem('theme', newTheme);
+        }
+
+        function loadTheme() {
+            const savedTheme = localStorage.getItem('theme');
+            if (savedTheme) {
+                document.documentElement.setAttribute('data-theme', savedTheme);
+                const btn = document.getElementById('themeToggle');
+                btn.textContent = savedTheme === 'dark' ? '☀️' : '🌙';
+            }
+        }
+
+        // ===== КАЛЬКУЛЯТОР =====
+        function calculate() {
+            const input = document.getElementById('priceInput');
+            const price = parseFloat(input.value);
+
+            if (isNaN(price) || price < 0) {
+                alert('❌ Введите корректное положительное число!');
+                input.focus();
+                return;
+            }
+
+            const cardPrice = (price * 1.12 + 2000) * 1.2;
+            const cashPrice = price * 1.12 + 2000;
+            const diff = cardPrice - cashPrice;
+
+            const cardFinal = roundUpTo990(cardPrice);
+            const cashFinal = roundUpTo990(cashPrice);
+            const diffFinal = cardFinal - cashFinal;
+            const percentDiffFinal = (diffFinal / cashFinal) * 100;
+
+            const formatPrice = (value) => {
+                return value.toLocaleString('ru-RU', {
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2
+                }) + ' ₽';
+            };
+
+            document.getElementById('cardPrice').textContent = formatPrice(cardPrice);
+            document.getElementById('cashPrice').textContent = formatPrice(cashPrice);
+            document.getElementById('diffPrice').textContent = formatPrice(diff);
+            document.getElementById('cardFinal').textContent = formatPrice(cardFinal);
+            document.getElementById('cashFinal').textContent = formatPrice(cashFinal);
+            document.getElementById('percentDiff').textContent = percentDiffFinal.toFixed(1) + '%';
+
+            document.getElementById('resultCard').classList.add('show');
+        }
+
+        function resetAll() {
+            document.getElementById('priceInput').value = '';
+            document.getElementById('resultCard').classList.remove('show');
+            document.getElementById('priceInput').focus();
+            document.getElementById('selectedInfo').textContent = 'Нажмите на товар, чтобы подставить цену';
+            document.getElementById('selectedInfo').style.color = 'var(--text-light)';
+        }
+
+        // ===== TOAST =====
+        function showToast(message) {
+            const existing = document.querySelector('.toast-notification');
+            if (existing) existing.remove();
+            
+            const toast = document.createElement('div');
+            toast.className = 'toast-notification';
+            toast.textContent = message;
+            toast.style.cssText = `
+                position: fixed;
+                bottom: 30px;
+                left: 50%;
+                transform: translateX(-50%);
+                background: var(--toast-bg);
+                color: var(--toast-text);
+                padding: 14px 28px;
+                border-radius: 12px;
+                font-weight: 600;
+                font-size: 14px;
+                z-index: 9999;
+                box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+                animation: slideUp 0.4s ease;
+                max-width: 90%;
+                text-align: center;
+            `;
+            
+            const style = document.createElement('style');
+            style.textContent = `
+                @keyframes slideUp {
+                    from { opacity: 0; transform: translateX(-50%) translateY(30px); }
+                    to { opacity: 1; transform: translateX(-50%) translateY(0); }
+                }
+            `;
+            document.head.appendChild(style);
+            
+            document.body.appendChild(toast);
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                toast.style.transform = 'translateX(-50%) translateY(30px)';
+                toast.style.transition = 'all 0.4s ease';
+                setTimeout(() => toast.remove(), 400);
+            }, 2500);
+        }
+
+        // ===== СОБЫТИЯ =====
+        document.getElementById('priceInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') calculate();
+        });
+
+        document.getElementById('newProductName').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                document.getElementById('newProductQty').focus();
+            }
+        });
+
+        document.getElementById('newProductQty').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                addProduct();
+            }
+        });
+
+        window.addEventListener('load', function() {
+            loadTheme();
+            loadProductsFromStorage();
+            renderPurchasePrices();
+            renderProducts();
+            document.getElementById('priceInput').focus();
+        });
+    </script>
+</body>
+</html>
